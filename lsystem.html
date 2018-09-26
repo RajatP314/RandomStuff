@@ -1,0 +1,101 @@
+<html>
+	<head>
+		<title>
+		L-System Test
+		</title>
+	</head>
+	<body>
+		<canvas width="400" height="400" style="border:1px solid;display:block;float:right;" id="myC"></canvas>
+		<p id="output" style="width:500px;height:400px;overflow:scroll;border:1px solid;">.</p>
+		<p style="float:right;width:400;"><button type="button" onclick="iterate()">Iterate</button>
+		<button type="button" onclick="draw()">Draw</button></p>
+		
+		<script>
+		
+var initStr = "F";
+var str = initStr;
+var varList = ["F", "X", "Y"];
+var rulesFXY = ["F[+XF]F[-YF]", "F+[X]-", "F-[Y]+"];
+var size;
+var posX;
+var posY;
+var posXS = [];
+var posYS = [];
+var angleS = [];
+var savenum = -1;
+var angle;
+var increment = 30;
+var c = document.getElementById("myC");
+var f = c.getContext("2d");
+
+
+document.getElementById("output").innerHTML = initStr;
+var iteration = 1;
+
+
+function iterate() {
+iteration++;
+
+var strArr = str.split("");
+var i;
+
+for(i=0;i<strArr.length;i++){
+
+	if(varList.indexOf(strArr[i]) > -1){
+	
+		var sub = rulesFXY[varList.indexOf(strArr[i])];
+		strArr.splice(i, 1, sub);
+		
+	}
+
+}
+str = strArr.toString();
+str = str.replace(/,/g, "");
+document.getElementById("output").innerHTML = str;
+
+}
+
+function draw() {
+f.clearRect(0,0,400,400);
+size = 400/Math.pow(2.3,iteration-1);
+posX = 200;
+posY = 400;
+angle = 90;
+var commands = str.split("");
+
+var i;
+
+for(i=0;i<commands.length;i++){
+	
+	if(commands[i] == "F"){
+		f.beginPath()
+		f.moveTo(posX, posY);
+		f.lineTo(posX+size*Math.cos(angle*Math.PI/180), posY-size*Math.sin(angle*Math.PI/180));
+		posX += size*Math.cos(angle*Math.PI/180);
+		posY -= size*Math.sin(angle*Math.PI/180)
+		f.stroke();
+		f.closePath();
+	} else if(commands[i] == "+"){
+		angle += increment;
+	} else if(commands[i] == "-"){
+		angle -= increment;
+	} else if(commands[i] == "["){
+		savenum++;
+		posXS.splice(savenum,0,posX);
+		posYS.splice(savenum,0,posY);
+		angleS.splice(savenum,0,angle);
+	} else if(commands[i] == "]"){
+		posX = posXS[savenum];
+		posY = posYS[savenum];
+		angle = angleS[savenum];
+		savenum--;
+	}
+
+}
+
+}
+		
+		</script>
+	
+	</body>
+</html>
