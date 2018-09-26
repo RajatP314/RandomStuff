@@ -1,0 +1,147 @@
+<html>
+	<head>
+		<title>Face</title>
+		<style type="text/css">
+		div {position:absolute;
+			 }
+		
+		#wrapper {background-color:#BBEEEE;
+				   border-radius:15%;
+				   top:100;
+				   left:100;
+				   width:300;
+				   height:300;
+				   cursor:url(mic.png);
+				   
+				   }
+		
+		#head {background:#FAEBD7;
+			   width:75px;
+			   height:100px;
+			   top:100;
+			   left:100;
+			   border-radius: 25% 25% 40% 40%;	
+			   z-index:2;
+		      }
+		
+		#hair {width:85;
+			   height:45;
+			   background:black;
+			   border-radius: 15% 15% 5% 5%;
+			   top:95;
+			   left:95;
+			   }
+		
+		#beard {width:40;
+				height:40;
+				background:black;
+				border-radius:50%;
+				top:170;
+				left:118;
+				z-index:1;
+			    }
+
+		.lens {width:30;
+			   height:25;
+			   background:#000066;
+			   position:absolute;
+			   border-radius:40%;
+			   top:25;
+			   }
+			   
+		 #lens1 {left:5;}
+		 		 
+		 
+		 #lens2 {left:40;}
+		 
+		 #connector {width:5;
+		 			 height:3;
+		 			 position:absolute;
+		 			 top:38;
+		 			 left:35;
+		 			 background:black;
+		 			 }
+		 			 
+		 #nose {width:15;
+		 		height:10;
+		 		position:absolute;
+		 		top:40;
+		 		left:30;
+		 		border-radius: 50%;
+		 		border: 1px solid;
+		 		background:#FAEBC7;
+		 	    }
+		 	    
+		 #mouth {width:25;
+		 		 height:20;
+		 		 position:absolute;
+		 		 top:60;
+		 		 left:26;
+		 		 background-color:#CC0000;
+		 		 border-radius: 0% 0% 50% 50%;
+		 		/* -webkit-animation-name:talk;
+		 		 -webkit-animation-duration:1s;
+		 		 -webkit-animation-iteration-count:3;*/
+		 		 }
+		 		 
+		 input:checked + p {-webkit-animation-name:talk;
+		 		 -webkit-animation-duration:1s;
+		 		 -webkit-animation-iteration-count:3;}
+		 			   
+		 @-webkit-keyframes talk {
+		 	0% {-webkit-transform: rotateX(0deg);}
+		 	10% {-webkit-transform: rotateX(20deg);}
+		 	20% {-webkit-transform: rotateX(40deg);}
+		 	30% {-webkit-transform: rotateX(60deg);}
+		 	40% {-webkit-transform: rotateX(80deg);}
+		 	50% {-webkit-transform: rotateX(100deg);}
+		 	60% {-webkit-transform: rotateX(80deg);}
+		 	70% {-webkit-transform: rotateX(60deg);}
+		 	80% {-webkit-transform: rotateX(40deg);}
+		 	90% {-webkit-transform: rotateX(20deg);}
+		 	100% {-webkit-transform: rotateX(0deg);}
+		 		}
+		 		
+		 #trigger {position:absolute;
+		 		   top:180;
+		 		   left:30;
+		 		   z-index:4;
+		 		   /*display:none;*/
+		 		   }
+		 label[for="trigger"] {width:50;
+		 					   height:25;
+		 					   text-align:center;
+		 					   background:#CC0000;
+		 					   z-index:5;
+		 					   position:absolute;
+		 					   top:180;
+		 					   left:15;
+		 					   border-radius:10%;
+		 					   color:white;
+		 					   font-family:"Arial";
+		 					   }
+		
+		</style>
+	</head>
+	
+	<body>
+	<div id="wrapper">
+	<div id="hair"></div>
+	<div id="head">
+	
+		<p id="glasses">
+			<span class="lens" id="lens1"></span>
+			<span id="connector"></span>
+			<span class="lens" id="lens2"></span>
+		</p>
+		
+		<p id="nose"></p>
+		<label for="trigger">Talk</label>
+		<input type="checkbox" id="trigger"/>
+		<p id="mouth"></p>
+	
+	</div>
+	<div id="beard"></div>	
+	</div>
+	</body>
+</html>
