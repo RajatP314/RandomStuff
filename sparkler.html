@@ -1,0 +1,136 @@
+<html>
+	<head>
+		<title>
+		Sparkler
+		</title>
+	</head>
+	
+	<body>
+	
+		<canvas height="400px" width="400px" style="border:1px solid;" id="myC"></canvas>
+		
+		<script type="text/javascript">
+		
+var c = document.getElementById("myC");
+var f = c.getContext("2d");
+
+f.fillStyle="#000000";
+f.fillRect(0,0,400,400);
+
+
+var sparkleCount = 0;
+var sparkleXVels = [];
+var sparkleYVels = [];
+var sparkleWidths = [];
+var sortedWidths = [];
+var maxSize = 0;
+var burstX = 0;
+var burstY = 0;
+var time = 0;
+var sparkleLoop;
+
+function drawSparkleAt(x, y, size) {
+
+	var xcoord = x;
+	var ycoord = y;
+	var bigRadius = size;
+	var smallRadius = size/4;
+	var distance = smallRadius;
+	var angle = 0;
+	
+	for(angle=0;angle<2*Math.PI;angle+=Math.PI/180){
+
+		var xpos = (bigRadius-smallRadius)*Math.cos(180*angle/Math.PI)+distance*Math.cos(((bigRadius-smallRadius)/smallRadius)*angle*180/Math.PI)+xcoord;
+		var ypos = (bigRadius-smallRadius)*Math.sin(180*angle/Math.PI)-distance*Math.sin(((bigRadius-smallRadius)/smallRadius)*angle*180/Math.PI)+ycoord;
+		f.fillRect(xpos,ypos,1,1);
+		
+	}
+}
+
+function drawFilledSparkleAt(x, y, size) {
+
+	var xC = x;
+	var yC = y;
+	var width = size;
+	var value = 0;
+	var i = 0;
+	
+	for(i=0;i<Math.ceil(width/2);i++) {
+		var changer = Math.floor(Math.random()*2) == 1 ? 1 : -1;
+		var valTwo = (2+changer)*value
+		var changer2 = Math.floor(Math.random()*2) == 1 ? 1 : -1;
+		var valThree = (2+changer2)*value
+		var changer3 = Math.floor(Math.random()*2) == 1 ? 1 : -1;
+		var valFour = (4+changer2)*value
+		f.fillStyle = "rgb(" + valTwo + "," + valThree + "," + valFour + ")";
+		drawSparkleAt(xC, yC, width-(2*i));
+		value+=20*i;
+	
+	}
+
+
+}
+
+function sparkleBurstInitiate(x, y) {
+	clearInterval(sparkleLoop);
+	sparkleCount = Math.round(Math.random()*5)+10;
+	sparkleXVels = [];
+	sparkleYVels = [];
+	sparkleWidths = [];
+	sortedWidths = [];
+	burstX = x;
+	burstY = y;
+	time = 0;
+	
+	var i=0;
+	for(i=0;i<sparkleCount;i++){
+		var xvel = Math.round(Math.random()*10);
+		xvel *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+		var yvel = Math.round(Math.random()*10);
+		yvel *= Math.floor(Math.random()*2) == 1 ? 1 : -1;
+		sparkleXVels.push(xvel);
+		sparkleYVels.push(yvel);
+		sparkleWidths.push(Math.round(Math.random()*5)+10);
+		sortedWidths.push(sparkleWidths[i]); 	
+	}
+	
+	sortedWidths.sort(function(a, b){return b-a});
+	maxSize = sortedWidths[0];
+	
+}
+
+function sparkleBurstFrame() {
+
+	f.fillStyle="#000000";
+	f.fillRect(0,0,400,400);
+	var i = 0;
+	for(i=0;i<sparkleCount;i++){
+		
+		drawFilledSparkleAt(burstX+(time*sparkleXVels[i]), burstY+(time*sparkleYVels[i]), sparkleWidths[i]-time);
+	}
+	time += 1;
+	
+	if(maxSize-time < 1) {
+		clearInterval(sparkleLoop);
+	}
+	
+}
+
+function sparkleBurst(x, y) {
+	
+	var iX = x;
+	var iY = y;
+	sparkleBurstInitiate(iX, iY);
+	sparkleLoop = setInterval(sparkleBurstFrame, 40);
+
+}
+
+c.onmousedown = function(event) {
+	sparkleBurst(event.clientX, event.clientY);
+}
+
+		
+		</script>
+	
+	</body>
+</html>

@@ -1,0 +1,171 @@
+<html>
+	<head>
+		<title>
+			Dots
+		</title>
+		<style>
+			body	{background-color: #000;}
+			canvas {
+					position: absolute;
+					top: 25%;
+					left: 25%;
+					/*border: 1px solid #FFFFFF*/;
+					}
+		</style>
+	</head>
+	
+	<body>
+	
+		<canvas id="myC" width="600" height="600" style="width:50%; height:50%;"></canvas>
+		
+		<script>
+		
+var c = document.getElementById("myC");
+var f = c.getContext("2d");
+
+var paused = true;
+
+var dots = [];
+var n = 5000;
+var time = 100;
+var cx = c.width/2;
+var cy = c.height/2;
+
+for(var i=0;i<n;i++){
+
+	var pathArray = [];
+	
+	var angle = 10*Math.PI*i/n;
+	
+	var V = 2, v = 2/7, F = 4, G = 5;
+	
+	var initX = c.width*i/n;
+	var initY = 2*Math.abs(initX-c.width/2);
+	var finalX
+	if(initY < 300){
+		finalX = (initX < 300)?450-Math.abs(initX - 150)*2:150+150*(i-2500)/1250;
+	} else {
+		finalX = (initX < 300)?450-2*Math.abs(initX - 150):226+1.5*Math.abs(initX-450);
+	}
+	var finalY = 300;
+	if(initY < 300 && initX > 300){
+		finalY = 300 - 300*(i-2500)/1250;
+	}
+	var p = new Path(initX, initY, finalX, finalY, time);
+	pathArray.push(p);
+
+
+	dots.push(new Dot(pathArray));
+}
+
+for(var i=0;i<dots.length;i++){
+	f.fillStyle="hsl("+color(i,n)+","+saturation(i,n)+"%,"+lightness(i,n)+"%)";
+	dots[i].startPath(0, dots[i].path.length-1);
+}
+
+var loop = setInterval(render, 20);
+
+onkeypress = function(event){
+	console.log("hi");
+	var key = event.keyCode || event.charCode;
+	if(key == 32){
+		if(paused == true){
+			paused = false;
+		} else {
+			paused = true;
+		}
+	}
+}
+
+function color(i, n){
+	return 10*Math.sin(100*i/n)+12;
+	//return 360*i/n+0;
+} 
+
+function saturation(i, n){
+	//return 75;
+	return 100;
+} 
+
+function lightness(i, n){
+	//return 75;
+	//return 20+20*i/n;
+	return 10*Math.sin(50*i/n)+20;
+} 
+
+function render(){
+	if(paused == false){
+		var points = [250,300];
+		/*for(var i=0;i<=500;i+=10){
+			points.push(i);
+		}*/
+		
+		//f.clearRect(0,0,c.width,c.height); //CLEAR THE PATHS
+		
+		for(var i=0;i<dots.length;i++){
+	//		if(points.indexOf(i) > -1){
+				dots[i].updatePath();
+				f.fillStyle="hsl("+color(i,n)+","+saturation(i,n)+"%,"+lightness(i,n)+"%)";
+				dots[i].draw();
+	//		}	
+		}
+	}
+}
+
+/////////////// DATA STRUCTURES ////////////////////////
+
+function Path(iX, iY, fX, fY, t){
+	this.startX = iX;
+	this.startY = iY;
+	this.endX = fX;
+	this.endY = fY;
+	this.pathTime = t;
+	this.incrementX = (this.endX-this.startX)/this.pathTime;
+	this.incrementY = (this.endY-this.startY)/this.pathTime;
+}
+
+function Dot(paths){
+	this.path = paths;
+	this.x = this.path.startX;
+	this.y = this.path.startY;
+	this.start = 0;
+	this.end = 0;
+	this.timer = 0;
+	
+	this.draw = function(){
+		f.beginPath();
+		f.arc(this.x, this.y, 1, 0, 2*Math.PI);
+		f.fill();
+		f.closePath();
+	}
+	
+	this.startPath = function(startNum, endNum){
+		this.start = startNum;
+		this.end = endNum;
+		this.x = this.path[startNum].startX;
+		this.y = this.path[startNum].startY;
+		this.timer = 0;
+		this.draw();
+	}
+	
+	this.updatePath = function(){
+		if(this.timer < this.path[this.start].pathTime){
+				this.timer++;
+				this.x += this.path[this.start].incrementX;
+				this.y += this.path[this.start].incrementY;
+		} else {
+			this.start++;
+			if(this.start <= this.end){
+				this.startPath(this.start, this.end);
+			} else {
+				clearInterval(loop);
+			}	
+		}
+	}
+	
+}
+		
+		</script>
+	
+	</body>
+</html>

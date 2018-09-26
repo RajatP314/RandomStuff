@@ -1,0 +1,174 @@
+<html>
+	<head>
+		<title>
+		Beam
+		</title>
+	</head>
+	
+	<body>
+		
+		<canvas height="400" width="400" style="border:1px solid;background-color:#000000;" id="myC"></canvas>
+		
+		<script type="text/javascript">
+
+var c = document.getElementById("myC");
+var space = c.getContext("2d");
+var fSpeed = 30;
+var particleList = [];
+var charge = 0;
+
+var loop = setInterval(render, 10);
+
+var clickX;
+var clickY;
+var maxSize = 25;
+var size = 0;
+var beamLength = 0;
+var maxBeamLength = 400;
+
+c.onmousedown = function spawnParticles(event) {
+	size = 0;
+	beamLength = 0;
+	charge = 1;
+	clickX = event.clientX;
+	clickY = event.clientY;
+	var amount = Math.floor(Math.random()*5+10);
+	var i;
+	for(i=0;i<amount;i++){
+		var xOff = Math.floor(Math.random()*100-5*i);
+		var yOff = Math.floor(Math.random()*100-5*i);
+		var holder = new particle(event.clientX+xOff, event.clientY-yOff, event.clientX, event.clientY);
+		particleList.splice(particleList.length, 0, holder);
+	}
+}
+
+c.onmouseup = function release(event) {
+
+	charge = 2;
+	
+}
+
+function render() {
+	space.clearRect(0,0,400,400);
+	var i;
+	for(i=0;i<particleList.length;i++){
+		if(particleList[i].despawn == 0){		
+			particleList[i].drawParticle();
+			if(Math.abs(particleList[i].x - particleList[i].tX) < 1 && Math.abs(particleList[i].y - particleList[i].tY) < 1) {
+				particleList[i].despawn = 1;
+			}
+			particleList[i].updateVars();
+		}
+	}
+	drawBall(clickX, clickY, size);
+	if(charge == 2) {
+		drawBeam();
+		if(beamLength < maxBeamLength){
+			beamLength+=25;
+		}
+		if(beamLength == maxBeamLength){
+			size-=0.25;
+		}
+	}
+	for(i=0;i<particleList.length;i++){
+		if(particleList[i].despawn == 1){
+			if(charge == 1){
+				var xOff = Math.floor(Math.random()*100-50);
+				var yOff = Math.floor(Math.random()*100-50);
+				var pHolder = new particle(clickX+xOff, clickY-yOff, clickX, clickY);
+				var delay = setTimeout(function() { particleList.splice(i, 1, pHolder) }, 20);
+			} else if(charge == 2) {
+				particleList.splice(i, 1);
+			}
+			if(size < maxSize){
+				size += 0.01;
+			}
+		}
+	}
+
+}
+
+function particle(xpos, ypos, targetX, targetY) {
+
+	this.x = xpos;
+	this.y = ypos;
+	this.tX = targetX
+	this.tY = targetY;
+	this.despawn = 0;
+	this.red = 0;
+	this.green = 0;
+	this.blue = 255;
+	this.speedX = (this.tX - this.x)/fSpeed;
+	this.speedY = (this.tY - this.y)/fSpeed;
+	this.redSpeed = Math.ceil((255 - this.red)/fSpeed);
+	this.greenSpeed = Math.ceil((255 - this.green)/fSpeed);
+	this.blueSpeed = Math.ceil((255 - this.blue)/fSpeed);
+    this.drawParticle = function () {
+
+		space.fillStyle = "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
+		space.beginPath();
+		space.arc(this.x, this.y, 3, 0, 2*Math.PI);
+		space.fill();
+		space.closePath();
+	}
+	
+	this.updateVars = function () {
+	
+		this.x += this.speedX;
+		this.y += this.speedY;
+		this.red += this.redSpeed;
+		this.green += this.greenSpeed;
+		this.blue += this.blueSpeed;
+
+	}
+}
+
+function drawBall(x, y, radius){
+
+	var red = 0;
+	var green = 0;
+	var blue = 255;
+	var i;
+
+	for(i=0;i<radius;i++){
+	space.strokeStyle = "rgb(" + red + "," + green + "," + blue + ")";
+	space.beginPath();
+	space.arc(x, y, radius-i, 0, 2*Math.PI);
+	space.stroke();
+	space.closePath();
+	red+=i^2
+	green+=i^2
+	blue+=0;
+	}
+}
+
+function drawBeam() {
+
+	var red = 0;
+	var green = 0;
+	var blue = 255;
+	var i;
+	
+	for(i=0;i<size;i++){
+	space.strokeStyle = "rgb(" + red + "," + green + "," + blue + ")";
+	space.beginPath();
+	space.moveTo(clickX, clickY+size-i);
+	space.lineTo(clickX+beamLength, clickY+size-i);
+	space.stroke();
+	space.closePath();
+	space.beginPath();
+	space.moveTo(clickX, clickY-size+i);
+	space.lineTo(clickX+beamLength, clickY-size+i);
+	space.stroke();
+	space.closePath();
+	red+=i^2;
+	green+=i^2;
+	blue+=0;
+	}
+
+}
+
+		</script>
+		
+	</body>
+</html>

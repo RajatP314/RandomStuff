@@ -1,0 +1,70 @@
+<html>
+
+	<head>
+		<title>Spirograph</title>
+	</head>
+	
+	<body>
+		<canvas width="600" height="600" id="field" style="border: 1px solid;"></canvas>
+		
+		<p>
+			<form style="text-align:right; width:180px;">
+				Big circle Radius: <input type="number" id="bigRadCtrl" min="50" max="300" /><br />
+				Small Circle Radius: <input type="number" id="smallRadCtrl" min="5" max="299" /><br />
+				Distance: <input type="number" id="distCtrl" min="1" max="300" /><br />
+				X Position: <input type="number" id="xCtrl" min="0" max="600" /><br />
+				Y Position: <input type="number" id="yCtrl" min="0" max="600" /><br />
+				<button type="button" onclick="setVars()">Draw</button>
+			</form>
+		</p>
+		
+		<script type="text/javascript">
+		
+var x = document.getElementById("field");
+var paper = x.getContext("2d");
+	
+paper.fillStyle = "#000000";
+paper.clearRect(0,0,600,600);
+
+var angle = 0;
+
+
+function draw() {
+	angle = 0;
+	paper.clearRect(0,0,600,600);
+	var renderLoop = setInterval(renderPx, 1/36000);
+
+}
+
+function setVars() {
+	
+	bigRadius = parseInt(document.getElementById("bigRadCtrl").value);
+	smallRadius = parseInt(document.getElementById("smallRadCtrl").value);
+	if(smallRadius>bigRadius) {
+		smallRadius = bigRadius-1;
+	}
+	distance = parseInt(document.getElementById("distCtrl").value);
+	
+	xcoord = parseInt(document.getElementById("xCtrl").value);
+	ycoord = parseInt(document.getElementById("yCtrl").value);
+	draw();
+}
+
+function renderPx() {
+	
+	var xpos = (bigRadius-smallRadius)*Math.cos(180*angle/Math.PI)+distance*Math.cos(((bigRadius-smallRadius)/smallRadius)*angle*180/Math.PI)+xcoord;
+	var ypos = (bigRadius-smallRadius)*Math.sin(180*angle/Math.PI)-distance*Math.sin(((bigRadius-smallRadius)/smallRadius)*angle*180/Math.PI)+ycoord;
+
+	paper.fillRect(xpos, ypos, 1, 1);	
+	angle += 1;
+	if(angle>36000){
+	clearInterval(renderLoop);
+	angle = 0;
+	}
+		
+}		
+		</script>
+		
+	</body>
+
+</html>
