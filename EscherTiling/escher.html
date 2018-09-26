@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Escher Tiling</title>
+	</head>
+	<script src="bezier.js"></script>
+	<script src="escher.js"></script>
+	<body>
+		<canvas width="2000" height="2000" style="border: 1px solid;"></canvas>
+		<script>
+	
+let c = document.querySelector("canvas");
+let f = c.getContext('2d');
+
+f.fillStyle="hsl(180, 30%, 80%)"
+f.fillRect(0,0,c.width, c.height);
+
+//let xc = [Math.random()*1000, Math.random()*1000, Math.random()*1000, Math.random()*1000];
+//let yc = [Math.random()*1000, Math.random()*1000, Math.random()*1000, Math.random()*1000];	
+
+let xc = [400, 300, 100, 250];
+let yc = [300, 100, 300, 500];
+
+//let q = new QuadTile(...xc, ...yc);
+//q.draw(f);
+//q.tesselate(c,f);
+let et = new EscherTile(...xc, ...yc);
+//et.draw(f);
+et.tesselate(c,  f);
+
+
+//let p = new Path(1000, 600);
+//p.generateRandomPath(100, 10);
+//p.draw(f, 100, 100); 
+	
+		</script>
+	</body>
+</html>

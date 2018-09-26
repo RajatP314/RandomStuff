@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Image to Color Clusters</title>
+		<meta charset="utf-8" />
+		<script src="imageLoader.js"></script>
+		<script src="cluster.js"></script>
+	</head>
+	<body>
+		<canvas style="border: 1px solid;"></canvas>
+		<script>
+		
+let c = document.querySelector("canvas");
+let f = c.getContext("2d");
+
+let img = new Image();
+
+loadImage(img, "forest.jpg")
+.then( (img)=>{
+	c.width = img.width;
+	c.height = img.height;
+	f.drawImage(img, 0, 0);
+});
+
+onkeydown = (event)=>{
+	if(event.which === 32 || event.charCode === 32){
+		let clusters = clusterify(20000, c, f);
+		console.log(clusters.length);
+		for(let cluster of clusters){
+			cluster.averageColor = cluster.getAverageColor();
+			for(let pixel of cluster.pixels){
+				//console.log("hi");
+				f.fillStyle = cluster.averageColor.toString();
+				f.fillRect(pixel.x, pixel.y, 1, 1);
+			}
+		}
+	}
+}
+
+function clusterify(threshold, canvas, ctx){
+
+	let clusters = [];
+	let pixelGrid = [];
+	
+	console.log('hi');
+	
+	for(let y=0;y<canvas.height;y++){
+		let row = [];
+		for(let x=0;x<canvas.width;x++){
+			row.push(getPixel(x, y, ctx));
+		}
+		pixelGrid.push(row);
+	}
+	
+	for(let y=0;y<canvas.height;y++){
+		for(let x=0;x<canvas.width;x++){
+			
+			let pixel = getPixel(x, y, ctx);
+			let left = null, top = null;
+			let lds = Infinity, tds = Infinity;
+			let usable = [];
+			
+			if(pixelDefined(x-1, y, canvas)){
+				left = pixelGrid[y][x-1];
+				lds = pixel.color.dSquaredFrom(clusters[left.cluster].baseColor);
+			}
+			if(pixelDefined(x, y-1, canvas)){
+				top = pixelGrid[y-1][x];
+				tds = pixel.color.dSquaredFrom(clusters[top.cluster].baseColor);
+			}
+			if(lds < threshold){
+				usable.push(left);
+			}
+			if(tds < threshold){
+				usable.push(top);
+			}
+			
+			if(usable.length === 0){
+				let cluster = new Cluster(pixel.color, clusters.length);
+				cluster.addPixel(pixel);
+				clusters.push(cluster);
+			} else {
+				usable.sort( (a, b)=>a.color.dSquaredFrom(pixel.color)-b.color.dSquaredFrom(pixel.color) );
+				let p2 = usable[0];
+				//console.log(usable);
+				clusters[pixelGrid[p2.y][p2.x].cluster].addPixel(pixel);
+			}
+			pixelGrid[y][x] = pixel;
+			
+		}
+		//console.log(y);
+	}
+	
+	return clusters;
+
+}
+
+function pixelDefined(x, y, canvas){
+	return (x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height);	
+}
+
+function getPixel(x, y, ctx){
+	let data = ctx.getImageData(x, y, 1, 1).data;
+	let color = new Color(data[0], data[1], data[2]);
+	return new Pixel(x, y, color);
+}
+		
+		</script>
+	</body>
+</html>
